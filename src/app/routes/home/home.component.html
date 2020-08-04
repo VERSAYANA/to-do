@@ -15,21 +15,53 @@
 <!--  </li>-->
 <!--</ul>-->
 <div class="home">
-
-  <div class="top">
-    <a [routerLink]="selectedTaskSync?.parent ? '/'+selectedTaskSync?.parent : '/'">back</a>
-    <div *ngFor="let task of topTasks | async">
-      <a routerLinkActive="active" [routerLink]="'/'+task.uid">{{ task.text }}</a>
+  <div class="lvl1">
+    <!--    <a [routerLink]="selectedTaskSync?.parent ? '/'+selectedTaskSync?.parent : '/'">back</a>-->
+    <div class="my-form">
+      <input #newTaskInput1 type="text" placeholder="New task" />
+      <button
+              (click)="createTask(newTaskInput1.value, lvl1Parent)"
+      >
+        Create Task
+      </button>
     </div>
-    <input placeholder="New Task" #newTaskInput />
-    <button (click)="createTask(newTaskInput.value, selectedTaskSync?.parent)">Create Task</button>
+    <div *ngFor="let task of lvl1 | async">
+      <button (click)="selectTask(task, 1)">{{
+        task.text
+      }}</button>
+    </div>
+
   </div>
 
-  <div class="bottom">
-    <div *ngFor="let task of bottomTasks | async">
-      <a routerLinkActive="active" [routerLink]="'/'+task.uid">{{ task.text }}</a>
+  <div class="lvl2">
+    <div class="my-form">
+      <input #newTaskInput2 type="text" placeholder="New task" />
+      <button
+              (click)="createTask(newTaskInput2.value, lvl2Parent)"
+      >
+        Create Task
+      </button>
     </div>
-    <input placeholder="New Task" #newTaskInput2 />
-    <button (click)="createTask(newTaskInput2.value, selectedTaskSync?.uid)">Create Task</button>
+    <div *ngFor="let task of lvl2 | async">
+      <button (click)="selectTask(task, 2)">{{
+        task.text
+        }}</button>
+    </div>
+  </div>
+
+  <div class="lvl3">
+    <div class="my-form">
+      <input #newTaskInput3 type="text" placeholder="New task" />
+      <button
+              (click)="createTask(newTaskInput3.value, lvl3Parent)"
+      >
+        Create Task
+      </button>
+    </div>
+    <div *ngFor="let task of lvl3 | async">
+      <button (click)="selectTask(task, 3)">{{
+        task.text
+        }}</button>
+    </div>
   </div>
 </div>
