@@ -1,0 +1,18 @@
+.home {
+  height: calc(100vh - 48px);
+  display: grid;
+  grid-template-rows: 50% 50%;
+}
+.top {
+  //background-color: red;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+
+.bottom {
+  //background-color: blue;
+}
+
+.active {
+  background-color: aqua;
+}

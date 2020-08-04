@@ -1,15 +1,16 @@
-import { BrowserModule } from '@angular/platform-browser'
-import { NgModule } from '@angular/core'
+import {BrowserModule} from '@angular/platform-browser'
+import {NgModule} from '@angular/core'
 
-import { environment } from '../environments/environment'
-import { AngularFireModule } from '@angular/fire'
-import { AngularFirestoreModule } from '@angular/fire/firestore'
+import {environment} from '../environments/environment'
+import {AngularFireModule} from '@angular/fire'
+import {AngularFirestoreModule} from '@angular/fire/firestore'
 
-import { AppRoutingModule } from './app-routing.module'
-import { AppComponent } from './app.component'
+import {AppRoutingModule} from './app-routing.module'
+import {AppComponent} from './app.component'
+import {HomeComponent} from './routes/home/home.component'
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, HomeComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -19,4 +20,5 @@ import { AppComponent } from './app.component'
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+}

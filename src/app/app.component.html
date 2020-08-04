@@ -1,23 +1,14 @@
-<!--<h2>Hello</h2>-->
-<!--<input placeholder="New Task" #newTaskInput />-->
-<!--<button (click)="createTask(newTaskInput.value)">New Task</button>-->
-<!--<ul>-->
-<!--  <li class="text" *ngFor="let task of tasks | async">-->
-<!--    {{ task.text }}-->
-<!--  </li>-->
-<!--</ul>-->
-<!--<div *ngIf="fireAuth.user | async as user; else showLogin">-->
-<!--  <h1>Hello {{ user.displayName }}!</h1>-->
-<!--  &lt;!&ndash;  <button (click)="createData(user)">Create Data</button>&ndash;&gt;-->
-<!--  <button (click)="logout()">Logout</button>-->
-<!--</div>-->
-<!--<ng-template #showLogin>-->
-<!--  <p>Please login.</p>-->
-<!--  <button (click)="login()">Login with Google</button>-->
-<!--</ng-template>-->
-  <li class="text" *ngFor="let task of tasks | async">
-    <input type="checkbox" />
-    <p>{{ task.text }}</p>
-  </li>
+<div class="app">
+  <div *ngIf="fireAuth.user | async as user; else showLogin">
+    <h1>Hello {{ user.displayName }}!</h1>
+    <!--  <button (click)="createData(user)">Create Data</button>-->
+    <button (click)="logout()">Logout</button>
+  </div>
 
-<router-outlet></router-outlet>
+  <ng-template #showLogin>
+    <p>Please login.</p>
+    <button (click)="login()">Login with Google</button>
+  </ng-template>
+
+  <router-outlet></router-outlet>
+</div>

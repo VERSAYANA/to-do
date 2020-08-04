@@ -1,0 +1,35 @@
+<!--<input placeholder="New Task" #newTaskInput />-->
+
+<!--<button (click)="createTask(newTaskInput.value, null)">New Task</button>-->
+
+<!--<ul>-->
+<!--  <li class="text" *ngFor="let task of tasks | async">-->
+<!--    {{ task.text }}-->
+<!--    <button>focus</button>-->
+<!--    <input-->
+<!--      class="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"-->
+<!--      placeholder="New Task"-->
+<!--      #newTaskInput-->
+<!--    />-->
+<!--    <button (click)="createTask(newTaskInput.value, task.uid)">New Task</button>-->
+<!--  </li>-->
+<!--</ul>-->
+<div class="home">
+
+  <div class="top">
+    <a [routerLink]="selectedTaskSync?.parent ? '/'+selectedTaskSync?.parent : '/'">back</a>
+    <div *ngFor="let task of topTasks | async">
+      <a routerLinkActive="active" [routerLink]="'/'+task.uid">{{ task.text }}</a>
+    </div>
+    <input placeholder="New Task" #newTaskInput />
+    <button (click)="createTask(newTaskInput.value, selectedTaskSync?.parent)">Create Task</button>
+  </div>
+
+  <div class="bottom">
+    <div *ngFor="let task of bottomTasks | async">
+      <a routerLinkActive="active" [routerLink]="'/'+task.uid">{{ task.text }}</a>
+    </div>
+    <input placeholder="New Task" #newTaskInput2 />
+    <button (click)="createTask(newTaskInput2.value, selectedTaskSync?.uid)">Create Task</button>
+  </div>
+</div>
