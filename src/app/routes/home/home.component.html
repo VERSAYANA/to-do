@@ -14,54 +14,242 @@
 <!--    <button (click)="createTask(newTaskInput.value, task.uid)">New Task</button>-->
 <!--  </li>-->
 <!--</ul>-->
-<div class="home">
+<div *ngIf="focused">
+  <div
+    class="task-row"
+  >
+    <div class="clickableDiv checkbox" (click)="complete(focusedTask)">
+      <svg
+        *ngIf="!focusedTask?.complete"
+        style="width: 24px; height: 24px;"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"
+        />
+      </svg>
+      <svg
+        *ngIf="focusedTask?.complete"
+        style="width: 24px; height: 24px;"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9"
+        />
+      </svg>
+    </div>
+
+    <div class="task-text clickableDiv">
+      {{ focusedTask?.text }}
+    </div>
+    <div (click)="delete(focusedTask)" class="delete-task-button clickableDiv">
+      <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"
+        />
+      </svg>
+    </div>
+
+    <div (click)="focus(focusedTask)" class="delete-task-button clickableDiv">
+      <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!focused" class="home">
   <div class="lvl1">
     <!--    <a [routerLink]="selectedTaskSync?.parent ? '/'+selectedTaskSync?.parent : '/'">back</a>-->
     <div class="my-form">
       <input #newTaskInput1 type="text" placeholder="New task" />
       <button
-              (click)="createTask(newTaskInput1.value, lvl1Parent)"
+        (click)="
+          createTask(newTaskInput1.value, lvl1Parent); newTaskInput1.value = ''
+        "
       >
         Create Task
       </button>
     </div>
-    <div *ngFor="let task of lvl1 | async">
-      <button (click)="selectTask(task, 1)">{{
-        task.text
-      }}</button>
-    </div>
 
+    <div
+      class="task-row"
+      [class.lvl1Selected]="lvl1Selected?.uid === task?.uid"
+      *ngFor="let task of lvl1"
+    >
+      <div class="clickableDiv checkbox" (click)="complete(task)">
+        <svg
+          *ngIf="!task.complete"
+          style="width: 24px; height: 24px;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"
+          />
+        </svg>
+        <svg
+          *ngIf="task.complete"
+          style="width: 24px; height: 24px;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9"
+          />
+        </svg>
+      </div>
+
+      <div class="task-text clickableDiv" (click)="selectTask(task, 1)">
+        {{ task.text }}
+      </div>
+      <div (click)="delete(task)" class="delete-task-button clickableDiv">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"
+          />
+        </svg>
+      </div>
+
+      <div (click)="focus(task)" class="delete-task-button clickableDiv">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"
+          />
+        </svg>
+      </div>
+    </div>
   </div>
 
-  <div class="lvl2">
+  <div *ngIf="showLvls[1]" class="lvl2">
     <div class="my-form">
       <input #newTaskInput2 type="text" placeholder="New task" />
       <button
-              (click)="createTask(newTaskInput2.value, lvl2Parent)"
+        (click)="
+          createTask(newTaskInput2.value, lvl2Parent); newTaskInput2.value = ''
+        "
       >
         Create Task
       </button>
     </div>
-    <div *ngFor="let task of lvl2 | async">
-      <button (click)="selectTask(task, 2)">{{
-        task.text
-        }}</button>
+    <div
+      class="task-row"
+      [class.lvl2Selected]="lvl2Selected?.uid === task?.uid"
+      *ngFor="let task of lvl2"
+    >
+      <div class="clickableDiv checkbox" (click)="complete(task)">
+        <svg
+          *ngIf="!task.complete"
+          style="width: 24px; height: 24px;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"
+          />
+        </svg>
+        <svg
+          *ngIf="task.complete"
+          style="width: 24px; height: 24px;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9"
+          />
+        </svg>
+      </div>
+
+      <div class="task-text clickableDiv" (click)="selectTask(task, 2)">
+        {{ task.text }}
+      </div>
+      <div (click)="delete(task)" class="delete-task-button clickableDiv">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"
+          />
+        </svg>
+      </div>
+
+      <div (click)="focus(task)" class="delete-task-button clickableDiv">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"
+          />
+        </svg>
+      </div>
     </div>
   </div>
 
-  <div class="lvl3">
+  <div *ngIf="showLvls[2]" class="lvl3">
     <div class="my-form">
       <input #newTaskInput3 type="text" placeholder="New task" />
       <button
-              (click)="createTask(newTaskInput3.value, lvl3Parent)"
+        (click)="
+          createTask(newTaskInput3.value, lvl3Parent); newTaskInput3.value = ''
+        "
       >
         Create Task
       </button>
     </div>
-    <div *ngFor="let task of lvl3 | async">
-      <button (click)="selectTask(task, 3)">{{
-        task.text
-        }}</button>
+    <div
+      class="task-row"
+      [class.lvl3Selected]="lvl3Selected?.uid === task?.uid"
+      *ngFor="let task of lvl3"
+    >
+      <div class="clickableDiv checkbox" (click)="complete(task)">
+        <svg
+          *ngIf="!task.complete"
+          style="width: 24px; height: 24px;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"
+          />
+        </svg>
+        <svg
+          *ngIf="task.complete"
+          style="width: 24px; height: 24px;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.58L10,14.17L16.59,7.58L18,9"
+          />
+        </svg>
+      </div>
+
+      <div class="task-text clickableDiv" (click)="selectTask(task, 3)">
+        {{ task.text }}
+      </div>
+      <div (click)="delete(task)" class="delete-task-button clickableDiv">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z"
+          />
+        </svg>
+      </div>
+
+      <div (click)="focus(task)" class="delete-task-button clickableDiv">
+        <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"
+          />
+        </svg>
+      </div>
     </div>
   </div>
 </div>

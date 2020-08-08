@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
   selectedTaskRef: AngularFirestoreDocument<Task>
   topTasks: Observable<Task[]>
   bottomTasks: Observable<Task[]>
-  selectedTask: Task
+  selectedTask: Task = null
   // user: User
   taskId: string | null
   selectedTaskSync: Task | undefined
@@ -34,19 +34,24 @@ export class HomeComponent implements OnInit {
   // private user: User
   rootLevelTasks: Observable<Task[]>
   user: User
-  lvl1: Observable<Task[]>
+  tasks: Task[]
+  lvl1: Task[]
+  lvl1Selected: Task
   lvl1Parent: string
-  lvl2: Observable<Task[]>
+  lvl2: Task[]
+  lvl2Selected: Task
   lvl2Parent: string
-  lvl3: Observable<Task[]>
+  lvl3: Task[]
+  lvl3Selected: Task
   lvl3Parent: string
-  selected: Task
+  selected: Task | null = null
+  showLvls = [true, false, false]
+  focused = false
+  focusedTask: Task
 
   constructor(
     private fireAuth: AngularFireAuth,
     private db: AngularFirestore,
-    private route: ActivatedRoute,
-    private dataService: DataService
   ) {}
 
   ngOnInit(): void {
@@ -54,49 +59,55 @@ export class HomeComponent implements OnInit {
       this.user = user
       // this.lvl1 = this.dataService.start(user)
       this.tasksCollection = this.db.collection('tasks', (ref) =>
-        ref.where('owner', '==', user.uid).where('parent', '==', null)
+        ref.where('owner', '==', user.uid)
       )
       this.rootLevelTasks = this.tasksCollection.valueChanges()
-      this.lvl1 = this.rootLevelTasks
-      this.lvl1.subscribe((res) => {
-        this.lvl1Parent = null
+      this.rootLevelTasks.subscribe((tasks) => {
+        this.tasks = tasks
+        const focusedTask = this.tasks.findIndex((t) => t.focus === true)
+        if (focusedTask !== -1) {
+          this.focusedTask = this.tasks[focusedTask]
+          this.focused = true
+        } else {
+          this.focusedTask = undefined
+          this.focused = false
+        }
+        if (this.selectedTask === null) {
+          this.lvl1 = tasks.filter((t) => t.parent === null)
+          this.lvl2 = undefined
+          this.lvl3 = undefined
+          this.showLvls = [true, false, false]
+          this.lvl1Parent = this.lvl1[0].parent
+        } else if (this.selectedTask.parent === null) {
+          this.lvl1 = tasks.filter((t) => t.parent === null)
+          this.lvl2 = tasks.filter((t) => t.parent === this.selectedTask.uid)
+          this.lvl3 = undefined
+          this.lvl1Parent = this.lvl1[0]?.parent || null
+          this.lvl2Parent = this.lvl1Selected?.uid || null
+          this.showLvls = [true, true, false]
+        } else {
+          // this.lvl1 = tasks.filter((t) => t.parent === this.selectedTask.parent)
+          // this.lvl3 = tasks.filter((t) => t.parent === this.selectedTask.uid)
+          let oneLevelOneTaskParent
+          // tslint:disable-next-line:prefer-for-of
+          for (let i = 0; i < tasks.length; i++) {
+            if (tasks[i].uid === this.selectedTask.parent) {
+              oneLevelOneTaskParent = tasks[i].parent
+            }
+          }
+          this.lvl1 = tasks.filter((t) => t.parent === oneLevelOneTaskParent)
+          this.lvl2 = tasks.filter((t) => t.parent === this.selectedTask.parent)
+          this.lvl3 = tasks.filter((t) => t.parent === this.selectedTask.uid)
+          this.showLvls = [true, true, true]
+          this.lvl1Parent = this.lvl1[0]?.parent || null
+          this.lvl2Parent = this.lvl1Selected?.uid || null
+          this.lvl3Parent = this.lvl2Selected?.uid || null
+        }
+        console.log('lvl1: ', this.lvl1)
+        console.log('lvl2: ', this.lvl2)
+        console.log('lvl3: ', this.lvl3)
       })
     })
-    // this.route.params.subscribe((params) => {
-    //   console.log(params)
-    //   this.taskId = params['task']
-    //   this.fireAuth.user.subscribe((user) => {
-    //     this.user = user
-    //
-    //     if (this.selectedTask === undefined) {
-    //
-    //     } else {
-    //       this.selectedTaskRef = this.firestore
-    //         .collection('tasks', (ref) =>
-    //           ref.where('owner', '==', this.user.uid)
-    //         )
-    //         .doc(this.taskId)
-    //       this.selectedTask = this.selectedTaskRef.valueChanges()
-    //
-    //       this.selectedTask.subscribe((task) => {
-    //         this.selectedTaskSync = task
-    //         this.topTasksRef = this.firestore.collection('tasks', (ref) =>
-    //           ref
-    //             .where('owner', '==', this.user.uid)
-    //             .where('parent', '==', task.parent)
-    //         )
-    //         this.topTasks = this.topTasksRef.valueChanges()
-    //         this.bottomTasksRef = this.firestore.collection('tasks', (ref) =>
-    //           ref
-    //             .where('owner', '==', this.user.uid)
-    //             .where('parent', '==', task.uid)
-    //         )
-    //         this.bottomTasks = this.bottomTasksRef.valueChanges()
-    //       })
-    //     }
-    //   })
-    // })
-    // console.log(this.taskId)
   }
 
   login(): void {
@@ -107,36 +118,68 @@ export class HomeComponent implements OnInit {
     this.fireAuth.signOut()
   }
 
-  selectTask(task: Task, level: number): void {
-    this.selectedTask = task
-    const tasks = this.db
-      .collection('tasks', (ref) =>
-        ref.where('owner', '==', this.user.uid).where('parent', '==', task.uid)
-      )
-      .valueChanges()
+  selectTask(selectedTask: Task, level: number): void {
     switch (level) {
       case 1:
-        // @ts-ignore
-        this.lvl2 = tasks
-        this.lvl2.subscribe((res) => {
-          this.lvl2Parent = res[0].uid
-        })
+        this.lvl1Selected = selectedTask
+        this.lvl2Selected = undefined
+        this.lvl3Selected = undefined
         break
       case 2:
-        // @ts-ignore
-        this.lvl3 = tasks
-        this.lvl3.subscribe((res) => {
-          this.lvl3Parent = res[0].uid
-        })
+        this.lvl2Selected = selectedTask
+        this.lvl3Selected = undefined
+        break
+      case 3:
+        this.lvl1Selected = this.lvl2Selected
+        this.lvl2Selected = selectedTask
+        break
+      default:
         break
     }
+    this.selectedTask = selectedTask
+    const tasks = this.tasks
+    if (this.selectedTask === null) {
+      this.lvl1 = tasks.filter((t) => t.parent === null)
+      this.lvl2 = undefined
+      this.lvl3 = undefined
+      this.showLvls = [true, false, false]
+      this.lvl1Parent = this.lvl1[0].parent
+    } else if (this.selectedTask.parent === null) {
+      this.lvl1 = tasks.filter((t) => t.parent === null)
+      console.log(this.selectedTask.uid)
+      this.lvl2 = tasks.filter((t) => t.parent === this.selectedTask.uid)
+      this.lvl3 = undefined
+      this.lvl1Parent = this.lvl1[0]?.parent || null
+      this.lvl2Parent = this.lvl1Selected?.uid || null
+      this.showLvls = [true, true, false]
+    } else {
+      // this.lvl1 = tasks.filter((t) => t.parent === this.selectedTask.parent)
+      // this.lvl3 = tasks.filter((t) => t.parent === this.selectedTask.uid)
+      let oneLevelOneTaskParent
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].uid === this.selectedTask.parent) {
+          oneLevelOneTaskParent = tasks[i].parent
+        }
+      }
+      this.lvl1 = tasks.filter((t) => t.parent === oneLevelOneTaskParent)
+      this.lvl2 = tasks.filter((t) => t.parent === this.selectedTask.parent)
+      this.lvl3 = tasks.filter((t) => t.parent === this.selectedTask.uid)
+      this.showLvls = [true, true, true]
+      this.lvl1Parent = this.lvl1[0]?.parent || null
+      this.lvl2Parent = this.lvl1Selected?.uid || null
+      this.lvl3Parent = this.lvl2Selected?.uid || null
+    }
+    console.log('lvl1: ', this.lvl1)
+    console.log('lvl2: ', this.lvl2)
+    console.log('lvl3: ', this.lvl3)
   }
 
   createTask(text: string, parent: string | null): void {
     console.log(text)
     console.log(parent)
     const id = this.db.createId()
-    this.topTasksRef.doc(id).set({
+    this.tasksCollection.doc(id).set({
       owner: this.user.uid,
       focus: false,
       text,
@@ -144,5 +187,39 @@ export class HomeComponent implements OnInit {
       parent,
       uid: id,
     })
+  }
+
+  delete(task: Task): void {
+    if (task.focus) {
+      this.focused = false
+    }
+    this.tasksCollection.doc(task.uid).delete()
+  }
+
+  complete(task: Task): void {
+    if (task.focus) {
+      this.focused = false
+    }
+    this.tasksCollection.doc(task.uid).update({
+      complete: !task.complete,
+    })
+  }
+
+  focus(task: Task): void {
+    this.tasksCollection.doc(task.uid).update({
+      focus: !task.focus,
+    })
+    // if (task.focus === false) {
+    //   this.tasksCollection.doc(task.uid).update({
+    //     focus: true,
+    //   })
+    //   this.focused = true
+    // } else {
+    //   this.tasksCollection.doc(task.uid).update({
+    //     focus: false,
+    //   })
+    //   this.focusedTask = undefined
+    //   this.focused = false
+    // }
   }
 }

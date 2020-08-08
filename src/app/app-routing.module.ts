@@ -4,7 +4,6 @@ import {AppComponent} from './app.component'
 import {HomeComponent} from './routes/home/home.component'
 
 const routes: Routes = [
-  { path: ':task', component: HomeComponent },
   { path: '', component: HomeComponent },
 ]
 
