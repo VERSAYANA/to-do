@@ -4,5 +4,6 @@ export interface Task {
   focus: boolean
   owner: string
   uid?: string,
-  complete: boolean
+  complete: boolean,
+  created: Date
 }
