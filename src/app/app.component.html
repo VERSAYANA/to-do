@@ -234,7 +234,9 @@
   <div class="login-container" *ngIf="!focused">
     <div *ngIf="fireAuth.user | async as user; else showLogin">
       <!--  <button (click)="createData(user)">Create Data</button>-->
-      <button (click)="logout()">Logout</button>
+<!--      <button style="background-color: white; border: none" (click)="logout()">Logout</button>-->
+<!--      <button (click)="login()">Login with Google</button>-->
+
     </div>
 
     <ng-template #showLogin>

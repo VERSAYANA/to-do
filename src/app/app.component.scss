@@ -19,7 +19,7 @@ $level3-color: #e6e6e6;
 }
 
 .home {
-  height: calc(100vh - 24px);
+  height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   //border-top: 1px solid gray;
