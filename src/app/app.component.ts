@@ -190,18 +190,13 @@ export class AppComponent implements OnInit {
   }
 
   delete(task: Task): void {
-    if (task.focus) {
-      this.focused = false
-    }
     this.tasksCollection.doc(task.uid).delete()
   }
 
   complete(task: Task): void {
-    if (task.focus) {
-      this.focused = false
-    }
     this.tasksCollection.doc(task.uid).update({
       complete: !task.complete,
+      focus: false
     })
   }
 
