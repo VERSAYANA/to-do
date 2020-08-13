@@ -9,7 +9,6 @@ import {
 import { Task } from '../intefaces'
 import { Observable } from 'rxjs'
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -35,6 +34,7 @@ export class AppComponent implements OnInit {
   user: User
   tasks: Task[]
   lvl1: Task[]
+  pinnedTasks: Task[]
   lvl1Selected: Task
   lvl1Parent: string
   lvl2: Task[]
@@ -71,6 +71,7 @@ export class AppComponent implements OnInit {
           this.focusedTask = undefined
           this.focused = false
         }
+        this.pinnedTasks = tasks.filter((t) => t.pinned)
         if (this.selectedTask === null) {
           this.lvl1 = tasks.filter((t) => t.parent === null)
           this.lvl2 = undefined
@@ -169,14 +170,14 @@ export class AppComponent implements OnInit {
       this.lvl2Parent = this.lvl1Selected?.uid || null
       this.lvl3Parent = this.lvl2Selected?.uid || null
     }
-    console.log('lvl1: ', this.lvl1)
-    console.log('lvl2: ', this.lvl2)
-    console.log('lvl3: ', this.lvl3)
+    // console.log('lvl1: ', this.lvl1)
+    // console.log('lvl2: ', this.lvl2)
+    // console.log('lvl3: ', this.lvl3)
   }
 
   createTask(text: string, parent: string | null): void {
-    console.log(text)
-    console.log(parent)
+    // console.log(text)
+    // console.log(parent)
     const id = this.db.createId()
     this.tasksCollection.doc(id).set({
       owner: this.user.uid,
@@ -186,6 +187,7 @@ export class AppComponent implements OnInit {
       parent,
       uid: id,
       created: new Date(),
+      pinned: false,
     })
   }
 
@@ -196,7 +198,7 @@ export class AppComponent implements OnInit {
   complete(task: Task): void {
     this.tasksCollection.doc(task.uid).update({
       complete: !task.complete,
-      focus: false
+      focus: false,
     })
   }
 
@@ -216,5 +218,10 @@ export class AppComponent implements OnInit {
     //   this.focusedTask = undefined
     //   this.focused = false
     // }
+  }
+  pin(task: Task): void {
+    this.tasksCollection.doc(task.uid).update({
+      pinned: !task.pinned,
+    })
   }
 }

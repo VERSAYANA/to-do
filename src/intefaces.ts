@@ -5,5 +5,6 @@ export interface Task {
   owner: string
   uid?: string,
   complete: boolean,
-  created: Date
+  created: Date,
+  pinned?: boolean
 }
